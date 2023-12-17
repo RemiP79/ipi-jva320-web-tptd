@@ -1,42 +1,13 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
-<head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<span th:insert="~{common :: head}">Head</span>
 
-    <title>Gestion des salariés</title>
-    <link rel="stylesheet" href="/static/bootstrap.min.css">
-    <link rel="stylesheet" href="./static/font-awesome.css">
-</head>
 <body>
-<div th:insert="~{common :: menu}">HEADER</div>
-<!--<div>
-    <nav class="navbar navbar-expand-lg navbar-light bg-light">
-        <a class="navbar-brand" href="http://localhost:8080/">Gestion des salariés</a>
-        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-
-        <div class="collapse navbar-collapse" id="navbarSupportedContent">
-            <ul class="navbar-nav mr-auto">
-                <li><a href="http://localhost:8080/salaries?page=0&amp;size=10&amp;sortProperty=nom&amp;sortDirection=ASC" class="nav-link">Liste des salariés <span class="badge badge-primary">26</span></a></li>
-            </ul>
-
-            <form class="form-inline my-2 my-lg-0" role="search" action="http://localhost:8080/salaries" method="GET">
-                <div class="form-group form-inline">
-                    <input name="nom" class="form-control" placeholder="Rechercher un nom" type="text">
-                </div>
-                <button type="submit" class="btn btn-outline-success ml-2 my-2 my-sm-0">Rechercher</button>
-            </form>
-        </div>
-    </nav>
-</div>
--->
+<div th:insert="~{common :: menu(${nbSalarie})}">HEADER</div>
 <div class="container">
     <div th:text="#{msg.salarie}"></div><!-- TODO better messages example -->
-
     <h2>Détail du salarié</h2>
-    
-    <!--<form id="saveForm" action="http://localhost:8080/salaries/aide/10" method="post" class="row">-->
-        <form id="saveForm" th:action="${salarie == null ? 'http://localhost:8080/salaries/aide/10':'http://localhost:8080/salaries/' + salarie.id}" method="post" class="row">
+    <form id="saveForm" th:action="${salarie == null ? 'http://localhost:8080/salaries/save':'http://localhost:8080/salaries/' + salarie.id}" method="post" class="row">
         <div class="col-lg-6">
             <div class="form-group">
                 <label class="form-control-label" for="id">ID</label>
@@ -78,7 +49,6 @@
             </div>
             </div>
         </div>
-        
 
         <div class="col-lg-6">
             <div>
@@ -111,31 +81,47 @@
                 </div>
             </div>
         </div>
-
         
     </form>
     
-    <div class="row">
+    <!--<div class="row">
         <div class="col-lg-6">
             <ul class="list-group list-unstyled">
                 <li class="alert alert-danger" role="alert">Erreur dans un champ !</li>
             </ul>
         </div>
-    </div>
+    </div>-->
     <div class="row mt-2">
         <div class="col-lg-6">
+
+            <!-- Partie ajoutee 1-->
+            <span th:switch="${salarie}">
+                <input form="saveForm" class="btn btn-primary" type="submit" value="Enregistrer" th:case="null">
+                <input form="saveForm" class="btn btn-primary" type="submit" value="Modifier" th:case="*">
+            </span>
+             <!--Fin partie 1 ajoutée-->
+            <!-- partie a decommenter si Partie ajoutee1 est suppriméé :
             <input form="saveForm" class="btn btn-primary" type="submit" value="Enregistrer">
+            -->
+
+            <!-- Partie 2 ajoutée -->
+            <span th:switch="${salarie!=null}">
+                <a th:href="|/salaries/${id}/delete|" class="btn btn-danger" th:case="true">Supprimer</a>
+            </span>
+            <!-- fin partie 2 ajoutée-->
+            <!-- partie a decommenter si Partie ajoutee2 est suppriméé :
             <a th:href="|/salaries/${id}/delete|" class="btn btn-danger">Supprimer</a>
+            -->
         </div>
     </div>
 
-    <div class="row">
+    <!--<div class="row">
     <table>
         <tr><td class="alert alert-danger" role="alert">Erreur de type de données !</td></tr>
     </table>
     <div>Erreur globale spécifique !</div>
-    </div>
+    </div>-->
 </div>
 
-
-</body></html>
+</body>
+</html>

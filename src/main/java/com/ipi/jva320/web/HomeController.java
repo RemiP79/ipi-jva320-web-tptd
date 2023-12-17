@@ -16,5 +16,5 @@ public class HomeController {
     model.put("message", "Bienvenue dans l'interface d'administration RH !");
     model.put("nbSalarie", SalarieAideADomicileService.countSalaries());
     return "home";
-}
+    }
 }

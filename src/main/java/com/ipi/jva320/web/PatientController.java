@@ -9,108 +9,78 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
 
-import javax.websocket.server.PathParam;
 import java.util.List;
 
 @Controller
 
 public class PatientController {
     @Autowired
-    private SalarieAideADomicileService SalarieAideADomicileService;
-
-
+    private SalarieAideADomicileService salarieAideADomicileService;
     @GetMapping("/salaries/{id}")
     public String getPatient(final ModelMap model, @PathVariable Long id) {
-        SalarieAideADomicile salarie = SalarieAideADomicileService.getSalarie(id);
+        SalarieAideADomicile salarie = salarieAideADomicileService.getSalarie(id);
         model.put("salarie", salarie);
+        model.put("nbSalarie", salarieAideADomicileService.countSalaries());
         return "/detail_Salarie";
     }
-
-
     @GetMapping("/salaries/aide/new")
     public String newForm(final ModelMap model) {
         model.put("empty", "");
+        model.put("nbSalarie", salarieAideADomicileService.countSalaries());
         return "/detail_Salarie";
     }
-
-    @PostMapping("/salaries/aide/10")
+    @PostMapping("/salaries/save")
     public String creationSalarie(final ModelMap model, SalarieAideADomicile salarie) {
         try {
-            SalarieAideADomicileService.creerSalarieAideADomicile(salarie);
+            salarieAideADomicileService.creerSalarieAideADomicile(salarie);
         } catch (SalarieException e) {
-            throw new RuntimeException(e);
+           throw new RuntimeException(e);
         }
-        //model.put("salarie", salarie);
-        return "/detail_Salarie";
-    }
+            //model.put("salarie", salarie);
+            return "/detail_Salarie";
 
+    }
     @PostMapping("/salaries/{id}")
     public String modificationSalarie(final ModelMap model, SalarieAideADomicile salarie) {
         try {
-           SalarieAideADomicileService.updateSalarieAideADomicile(salarie);
+           salarieAideADomicileService.updateSalarieAideADomicile(salarie);
         } catch (SalarieException e) {
             throw new RuntimeException(e);
         }
+        model.put("nbSalarie", salarieAideADomicileService.countSalaries());
         //model.put("salarie", salarie);
-        return "redirect:/list.html";
+        return "/list";
     }
     @GetMapping("/salaries/{id}/delete")
     public String suppressionSalarie(final ModelMap model, @PathVariable Long id, SalarieAideADomicile salarie) {
         try {
-            SalarieAideADomicileService.deleteSalarieAideADomicile(id);
+            salarieAideADomicileService.deleteSalarieAideADomicile(id);
         } catch (SalarieException e) {
             throw new RuntimeException(e);
         }
-        return "redirect:/list.html";
+        model.put("nbSalarie", salarieAideADomicileService.countSalaries());
+        return "/list";
     }
-
     @GetMapping(value="/salaries")
     public String faireLalisteDesSalaries(final ModelMap model){
-        model.put("salaries", SalarieAideADomicileService.getSalaries());
+        model.put("salaries", salarieAideADomicileService.getSalaries());
+        model.put("nbSalarie", salarieAideADomicileService.countSalaries());
         return "list";
     }
-
-
-
-
-
-
-
-
-        @GetMapping ("/salariés?nom={nom}")
-        public String listerSalaries(ModelMap model,@Nullable @RequestParam(name = "nom") String nom) {
-            List<SalarieAideADomicile> resultatsRecherche;
-
-            if ( SalarieAideADomicileService.getSalaries(nom).isEmpty() &&  nom != null && !nom.isEmpty()) {
-                // Effectuer la recherche par nom
-                throw new RuntimeException();
-               //resultatsRecherche = SalarieAideADomicileService.getSalaries();
+    @GetMapping("/salariés")
+    public String rechercherSalaries(ModelMap model, @Nullable @RequestParam(name = "nom") String nom) throws SalarieException {
+        List<SalarieAideADomicile> resultatsRecherche;
+        model.put("nbSalarie", salarieAideADomicileService.countSalaries());
+        if (nom != null && !nom.isEmpty()) {
+           resultatsRecherche = salarieAideADomicileService.getSalaries(nom);
+            if (resultatsRecherche.isEmpty()) {
+                throw new SalarieException("Le nom n'est pas connu dans la base, retour page home : http://localhost:8080/");
             }
-            else {
-               // Obtenir tous les salariés si aucun nom n'est spécifié
-                resultatsRecherche = null ;///////////////////////////////
-            }
-
-            // Ajouter les résultats à la vue
-            model.put("resultatsRecherche", resultatsRecherche);
-
-            return "/salaries/{id}";
+            model.put("salaries", resultatsRecherche);
+            return "list";
+        } else {
+            return "list";
         }
 
-
-
-
-
+    }
 }
-
-
-  /*  @GetMapping("/salaries/aide/11/edit")
-    public String editSalarie(@PathVariable Long id, Model model) {
-        SalarieAideADomicile salarie = SalarieAideADomicileService.getSalarie(id);
-
-        // Activez le champ id pour le formulaire d'édition
-        salarie.setDisable(false);
-
-        model.addAttribute("salarie", salarie);
-        return "/detail_Salarie";
-    }*/
