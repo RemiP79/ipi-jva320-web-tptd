@@ -104,11 +104,11 @@
             <input form="saveForm" class="btn btn-primary" type="submit" value="Enregistrer">
             -->
 
-            <!-- Partie 2 ajoutée -->
+
             <span th:switch="${salarie!=null}">
                 <a th:href="|/salaries/${id}/delete|" class="btn btn-danger" th:case="true">Supprimer</a>
             </span>
-            <!-- fin partie 2 ajoutée-->
+
             <!-- partie a decommenter si Partie ajoutee2 est suppriméé :
             <a th:href="|/salaries/${id}/delete|" class="btn btn-danger">Supprimer</a>
             -->
